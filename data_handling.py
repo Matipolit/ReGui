@@ -52,7 +52,9 @@ class DataHandler:
             return self.data["token"]
         
     def authorize_first_time(self, reddit: praw.Reddit):
-        webbrowser.open(reddit.auth.url(scopes=["account", "edit", "identity", "vote", "mysubreddits", "read", "save", "submit", "subscribe"], state="1", duration="permanent"))
+        auth_url = reddit.auth.url(scopes=["account", "edit", "identity", "vote", "mysubreddits", "read", "save", "submit", "subscribe"], state="1", duration="permanent")
+        logging.debug(auth_url)
+        webbrowser.open(auth_url)
         code = get_code()
         logging.debug(f"received code: {code}")
 

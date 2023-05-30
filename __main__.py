@@ -43,7 +43,7 @@ mylogger.addHandler(stdout_handler)
 
 data_handler = DataHandler()
 token = data_handler.get_token()
-if token is None:
+if token is None or token == "":
     reddit = praw.Reddit(
         client_id="0pwzprPqEpM2CQqnAie3_g",
         client_secret="-iXVV7jUiIIoR0wIX9wemkWnxUTV7g",
