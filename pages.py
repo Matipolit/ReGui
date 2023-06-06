@@ -23,12 +23,10 @@ class FillSubmissionsThread(QtCore.QThread):
 
     def run(self):
         emitStep = self.number/100.0
-        print(emitStep)
         for i in range(self.number):
             submission = self.posts_iter.__next__()
             self.listToFill.append(submission)
             self.progressSignal.emit(int(i/emitStep))
-            print(int(i/emitStep))
         self.completeSignal.emit("complete")
 
 
@@ -82,7 +80,6 @@ class Page(QWidget):
         self.ui.searchButton.clicked.connect(lambda: self.handle_search_button(reddit))
         self.ui.helpButton.clicked.connect(self.show_help)
         self.ui.logoutButton.clicked.connect(lambda: self.handle_logout_button(logout_callback))
-        #self.ui.loadingPostsBar.setVisible(False)
         self.ui.loadingPostsBar.setParent(self)
         self.ui.loadingPostsBar.setRange(0, 100)
         self.subHistory = []
@@ -133,15 +130,10 @@ class Page(QWidget):
         self.fillPostsThread.start()
         self.fillPostsThread.completeSignal.connect(lambda event: self.addPostsFromList(submissions_list, number))
         self.fillPostsThread.progressSignal.connect(lambda event: self.ui.loadingPostsBar.setValue(event))
-        #for i in range(number):
-        #    submission = self.sub_iterator.__next__()
-        #    post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
-        #    self.ui.pageScrollVerticalLayout.addWidget(post_widget)
+
         
     @QtCore.Slot() 
     def addPostsFromList(self, submissions_list: list, number: int):
-        self.ui.loadingPostsBar.setValue(0)
-        self.ui.loadingPostsBar.setVisible(False)
         for submission in submissions_list:
             post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
             self.ui.pageScrollVerticalLayout.addWidget(post_widget)
@@ -152,6 +144,8 @@ class Page(QWidget):
             self.moreButton = QPushButton(text="Load more")
             self.moreButton.clicked.connect(lambda: self.fill_submissions_list(number))
             self.ui.pageScrollVerticalLayout.addWidget(self.moreButton)
+        self.ui.loadingPostsBar.setValue(0)
+        self.ui.loadingPostsBar.setVisible(False)
 
 
     def show_big_post(self, submission):

@@ -20,7 +20,7 @@ class ResultWidget(QWidget):
         self.clickedCallback = clickedCallback
         self.subreddit = subreddit
         
-    def mouseDoubleClickEvent(self, event):
+    def mousePressEvent(self, _):
         logging.debug("selected sub " + self.subreddit.display_name)
         self.clickedCallback(self.subreddit)
 

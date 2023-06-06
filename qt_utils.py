@@ -20,15 +20,14 @@ class GetPixmapThread(QThread):
     completeSignal = Signal(str)
 
     def __init__(self, url:str, pixMapToFill: QPixmap, parent=None):
-        super(MyQThread, self).__init__(parent)
-        # You can change variables defined here after initialization - but before calling start()
+        super(GetPixmapThread, self).__init__(parent)
         self.maxRange = 100
         self.url = url
         self.pixmap = pixMapToFill
 
     def run(self):
         # blocking code goes here
-        img_data = request.urlopen(url).read()
+        img_data = request.urlopen(self.url).read()
         self.pixmap.loadFromData(img_data)
         self.completeSignal.emit(self.completionMessage)
 
