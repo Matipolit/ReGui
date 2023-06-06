@@ -7,9 +7,9 @@ import sys
 import os
 import logging
 from ui.ui_login import Ui_LoginWidget
-from page_ui_wrapper import Page
+from pages import Page
 from data_handling import DataHandler
-from app import AppState
+from state import AppState
 from PySide6 import QtCore
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (QMainWindow, QPushButton, QApplication, QLabel, QVBoxLayout, QHBoxLayout, QListView, QStackedLayout,
@@ -72,8 +72,12 @@ class MainLayout(QWidget):
         self.update_login_buttons()
         self.layout.addWidget(self.login_widget)
 
-        self.page_widget = Page(reddit)
+        self.page_widget = Page(reddit, self.logout_callback)
         self.layout.addWidget(self.page_widget)
+        self.update_ui()
+
+    def logout_callback(self):
+        self.state = AppState.LOGIN
         self.update_ui()
 
     def update_ui(self):

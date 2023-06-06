@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'post-big.ui'
+## Form generated from reading UI file 'post_big.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.0
 ##
@@ -23,7 +23,7 @@ class Ui_BigPost(object):
     def setupUi(self, BigPost):
         if not BigPost.objectName():
             BigPost.setObjectName(u"BigPost")
-        BigPost.resize(713, 688)
+        BigPost.resize(703, 665)
         BigPost.setContextMenuPolicy(Qt.NoContextMenu)
         self.gridLayout = QGridLayout(BigPost)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -37,7 +37,7 @@ class Ui_BigPost(object):
         self.postScrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 697, 672))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 687, 649))
         self.gridLayout_3 = QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.verticalLayout = QVBoxLayout()
@@ -94,14 +94,16 @@ class Ui_BigPost(object):
         self.contentScrollArea.setObjectName(u"contentScrollArea")
         sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
         sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(6)
+        sizePolicy3.setVerticalStretch(99)
         sizePolicy3.setHeightForWidth(self.contentScrollArea.sizePolicy().hasHeightForWidth())
         self.contentScrollArea.setSizePolicy(sizePolicy3)
+        self.contentScrollArea.setMinimumSize(QSize(0, 300))
         self.contentScrollArea.setMaximumSize(QSize(16777215, 16777215))
+        self.contentScrollArea.setSizeIncrement(QSize(0, 1))
         self.contentScrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 677, 346))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 667, 430))
         self.gridLayout_2 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.postContent = QLabel(self.scrollAreaWidgetContents)

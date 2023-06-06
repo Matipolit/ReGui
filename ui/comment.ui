@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>677</width>
-    <height>378</height>
+    <height>380</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -112,7 +112,7 @@
            <x>0</x>
            <y>0</y>
            <width>643</width>
-           <height>272</height>
+           <height>274</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
@@ -188,12 +188,30 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgba(0, 20, 220, 0.3);</string>
+          </property>
           <property name="text">
            <string/>
           </property>
           <property name="icon">
            <iconset theme="arrow-up">
             <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="default">
+           <bool>false</bool>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
           </property>
          </widget>
         </item>

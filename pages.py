@@ -1,6 +1,8 @@
 from ui.ui_page import Ui_Page
 from ui.ui_subreddit import Ui_SubHeader
-from post_ui_wrapper import SmallPost, BigPost
+from posts import SmallPost, BigPost
+from search import SearchWindow
+from help import Help
 from qt_utils import remove_all_children, get_qpixmap_from_url
 import pprint
 from PySide6.QtWidgets import (QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QListView, QListWidget, QListWidgetItem, QWidget)
@@ -50,14 +52,35 @@ class SubHeader(QWidget):
 
 
 class Page(QWidget):
-    def __init__(self, reddit: praw.Reddit, parent=None):
+    def __init__(self, reddit: praw.Reddit, logout_callback, parent=None):
         super(Page, self).__init__(parent)
         self.ui = Ui_Page()
         self.ui.setupUi(self)
         self.ui.backButton.setVisible(False)
         self.ui.backButton.clicked.connect(self.go_back_in_history)
+        self.ui.searchButton.clicked.connect(lambda: self.handle_search_button(reddit))
+        self.ui.helpButton.clicked.connect(self.show_help)
+        self.ui.logoutButton.clicked.connect(lambda: self.handle_logout_button(logout_callback))
         self.subHistory = []
         self.reddit = reddit
+
+    @QtCore.Slot()
+    def show_help(self):
+        self.helpPage = Help()
+        self.helpPage.show()
+
+    @QtCore.Slot()
+    def handle_logout_button(self, callback):
+       callback() 
+
+    def handle_search_button(self, reddit: praw.Reddit):
+        self.searchWindow = SearchWindow(lambda subreddit: self.handle_search_sub_clicked(subreddit), reddit.subreddits)
+        self.searchWindow.show()
+
+    def handle_search_sub_clicked(self, subreddit: praw.reddit.models.Subreddit):
+        self.populate(subreddit)
+        self.searchWindow.close()
+        self.searchWindow = None
 
     def handle_sub_button(self, subscribe, subreddit: praw.reddit.models.Subreddit):
         if(subscribe):
@@ -82,8 +105,7 @@ class Page(QWidget):
     def addPosts(self, number: int):
         for i in range(number):
             submission = self.sub_iterator.__next__()
-            #logging.debug(pprint.pformat(vars(submission)))
-            post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_post(submission))
+            post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
             self.ui.pageScrollVerticalLayout.addWidget(post_widget)
         
         if(hasattr(self, "moreButton")):
@@ -95,7 +117,7 @@ class Page(QWidget):
             self.ui.pageScrollVerticalLayout.addWidget(self.moreButton)
 
 
-    def show_post(self, submission):
+    def show_big_post(self, submission):
         remove_all_children(self.ui.postVerticalLayout)
         self.ui.postVerticalLayout.addWidget(BigPost(self.reddit, submission, clickedSubCallback= lambda subreddit: self.populate(subreddit)))
 

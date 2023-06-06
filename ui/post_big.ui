@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>713</width>
-    <height>688</height>
+    <width>703</width>
+    <height>665</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -33,8 +33,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>697</width>
-        <height>672</height>
+        <width>687</width>
+        <height>649</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
@@ -130,13 +130,25 @@
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                <horstretch>0</horstretch>
-               <verstretch>6</verstretch>
+               <verstretch>99</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>300</height>
+              </size>
              </property>
              <property name="maximumSize">
               <size>
                <width>16777215</width>
                <height>16777215</height>
+              </size>
+             </property>
+             <property name="sizeIncrement">
+              <size>
+               <width>0</width>
+               <height>1</height>
               </size>
              </property>
              <property name="widgetResizable">
@@ -147,8 +159,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>677</width>
-                <height>346</height>
+                <width>667</width>
+                <height>430</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_2">

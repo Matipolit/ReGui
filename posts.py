@@ -5,8 +5,8 @@ from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtCore import Slot
 from urllib import request
-from qt_utils import get_qpixmap_from_url
-from comment_ui_wrapper import Comment
+from qt_utils import get_qpixmap_from_url, color_buttons_according_to_vote
+from comments import Comment
 import webbrowser
 import logging
 import pprint
@@ -40,18 +40,21 @@ class SmallPost(QWidget):
 
         self.clickedCallback = clickedCallback
         self.submission = submission
+        color_buttons_according_to_vote(submission, self.ui.upvButton, self.ui.downButton)
 
     @Slot()
     def upvote(self):
         self.submission.upvote()
         self.submission = self.reddit.submission(self.submission.id)
         self.ui.scoreLabel.setText(str(self.submission.score))
+        color_buttons_according_to_vote(self.submission, self.ui.upvButton, self.ui.downButton)
 
     @Slot()
     def downvote(self):
         self.submission.downvote()
         self.submission = self.reddit.submission(self.submission.id)
         self.ui.scoreLabel.setText(str(self.submission.score))
+        color_buttons_according_to_vote(self.submission, self.ui.upvButton, self.ui.downButton)
 
     def mousePressEvent(self, event):
         self.clickedCallback(self.submission)
@@ -108,6 +111,8 @@ class BigPost(QWidget):
         self.ui.scoreLabel.setText(str(submission.score))
         self.submission = submission
 
+        color_buttons_according_to_vote(submission, self.ui.upvButton, self.ui.downButton)
+
         for comment in submission.comments:
             self.ui.verticalLayout.addWidget(Comment(comment))
 
@@ -116,12 +121,14 @@ class BigPost(QWidget):
         self.submission.upvote()
         self.submission = self.reddit.submission(self.submission.id)
         self.ui.scoreLabel.setText(str(self.submission.score))
+        color_buttons_according_to_vote(self.submission, self.ui.upvButton, self.ui.downButton)
 
     @Slot()
     def downvote(self):
         self.submission.downvote()
         self.submission = self.reddit.submission(self.submission.id)
         self.ui.scoreLabel.setText(str(self.submission.score))
+        color_buttons_according_to_vote(self.submission, self.ui.upvButton, self.ui.downButton)
 
     @Slot()
     def goToLink(self):
