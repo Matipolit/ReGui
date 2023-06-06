@@ -11,28 +11,24 @@ import logging
 import praw
 
 
-class FillPostsThread(QtCore.QThread):
-    # Signals to relay thread progress to the main GUI thread
+class FillSubmissionsThread(QtCore.QThread):
     progressSignal = QtCore.Signal(int)
     completeSignal = QtCore.Signal(str)
 
-    def __init__(self, posts_iter, listToFill: list, number: int, reddit: praw.Reddit, show_big_post_fun, parent=None):
-        super(FillPostsThread, self).__init__(parent)
-        # You can change variables defined here after initialization - but before calling start()
+    def __init__(self, posts_iter, listToFill: list, number: int, parent=None):
+        super(FillSubmissionsThread, self).__init__(parent)
         self.posts_iter = posts_iter
         self.listToFill = listToFill
         self.number = number
-        self.reddit = reddit
-        self.show_big_post = show_big_post_fun
 
     def run(self):
-        # blocking code goes here
         emitStep = self.number/100.0
+        print(emitStep)
         for i in range(self.number):
             submission = self.posts_iter.__next__()
-            post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
-            self.listToFill.append(post_widget)
+            self.listToFill.append(submission)
             self.progressSignal.emit(int(i/emitStep))
+            print(int(i/emitStep))
         self.completeSignal.emit("complete")
 
 
@@ -86,6 +82,9 @@ class Page(QWidget):
         self.ui.searchButton.clicked.connect(lambda: self.handle_search_button(reddit))
         self.ui.helpButton.clicked.connect(self.show_help)
         self.ui.logoutButton.clicked.connect(lambda: self.handle_logout_button(logout_callback))
+        #self.ui.loadingPostsBar.setVisible(False)
+        self.ui.loadingPostsBar.setParent(self)
+        self.ui.loadingPostsBar.setRange(0, 100)
         self.subHistory = []
         self.reddit = reddit
 
@@ -125,25 +124,33 @@ class Page(QWidget):
             logging.debug("Subreddit vars: " + pprint.pformat(vars(subreddit)))
             self.ui.pageScrollVerticalLayout.addWidget(SubHeader(subreddit.display_name, subreddit.subscribers, subreddit.user_is_subscriber, subreddit.icon_img, lambda subscribe: self.handle_sub_button(subscribe, subreddit)))
         self.sub_iterator = subreddit.hot(limit=1000)
-        self.addPosts(10)
+        self.fill_submissions_list(10)
         
-    def addPosts(self, number: int):
-        post_list = []
-        self.fillPostsThread = FillPostsThread(self.sub_iterator, post_list, number, self.reddit, lambda sub: self.show_big_post(sub))
+    def fill_submissions_list(self, number: int):
+        submissions_list = []
+        self.fillPostsThread = FillSubmissionsThread(self.sub_iterator, submissions_list, number)
+        self.ui.loadingPostsBar.setVisible(True)
         self.fillPostsThread.start()
-        for post in post_list:
-            self.ui.pageScrollVerticalLayout.addWidget(post)
+        self.fillPostsThread.completeSignal.connect(lambda event: self.addPostsFromList(submissions_list, number))
+        self.fillPostsThread.progressSignal.connect(lambda event: self.ui.loadingPostsBar.setValue(event))
         #for i in range(number):
         #    submission = self.sub_iterator.__next__()
         #    post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
         #    self.ui.pageScrollVerticalLayout.addWidget(post_widget)
         
+    @QtCore.Slot() 
+    def addPostsFromList(self, submissions_list: list, number: int):
+        self.ui.loadingPostsBar.setValue(0)
+        self.ui.loadingPostsBar.setVisible(False)
+        for submission in submissions_list:
+            post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
+            self.ui.pageScrollVerticalLayout.addWidget(post_widget)
         if(hasattr(self, "moreButton")):
             self.ui.pageScrollVerticalLayout.removeWidget(self.moreButton)
             self.ui.pageScrollVerticalLayout.addWidget(self.moreButton)
         else:
             self.moreButton = QPushButton(text="Load more")
-            self.moreButton.clicked.connect(lambda: self.addPosts(number))
+            self.moreButton.clicked.connect(lambda: self.fill_submissions_list(number))
             self.ui.pageScrollVerticalLayout.addWidget(self.moreButton)
 
 

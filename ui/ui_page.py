@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QLayout,
-    QPushButton, QScrollArea, QSizePolicy, QVBoxLayout,
-    QWidget)
+    QProgressBar, QPushButton, QScrollArea, QSizePolicy,
+    QVBoxLayout, QWidget)
 
 class Ui_Page(object):
     def setupUi(self, Page):
@@ -100,6 +100,12 @@ class Ui_Page(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.pageScrollVerticalLayout = QVBoxLayout()
         self.pageScrollVerticalLayout.setObjectName(u"pageScrollVerticalLayout")
+        self.loadingPostsBar = QProgressBar(self.pageScrollAreaWidgetContents)
+        self.loadingPostsBar.setObjectName(u"loadingPostsBar")
+        self.loadingPostsBar.setValue(0)
+
+        self.pageScrollVerticalLayout.addWidget(self.loadingPostsBar)
+
 
         self.horizontalLayout_2.addLayout(self.pageScrollVerticalLayout)
 

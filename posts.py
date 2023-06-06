@@ -3,15 +3,34 @@ from ui.ui_post_big import Ui_BigPost
 from PySide6.QtWidgets import (QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QListView, QListWidget, QListWidgetItem, QWidget)
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWebEngineCore import QWebEngineSettings
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, QThread, Signal
 from urllib import request
-from qt_utils import get_qpixmap_from_url, color_buttons_according_to_vote, GetPixmapThread
+from qt_utils import get_qpixmap_from_url, color_buttons_according_to_vote
 from comments import Comment
 import webbrowser
 import logging
 import pprint
 import praw
 import markdown
+
+class FillCommentsThread(QThread):
+    progressSignal = Signal(int)
+    completeSignal = Signal(str)
+
+    def __init__(self, comments_iter, listToFill: list, number: int, parent=None):
+        super(FillCommentsThread, self).__init__(parent)
+        self.comments_iter = comments_iter
+        self.listToFill = listToFill
+        self.number = number
+
+    def run(self):
+        emitStep = self.number/100.0
+        for i, comment in enumerate(self.comments_iter):
+            self.listToFill.append(comment)
+            self.progressSignal.emit(int(i/emitStep))
+        self.completeSignal.emit("complete")
+
+
 
 
 class SmallPost(QWidget):
@@ -113,8 +132,17 @@ class BigPost(QWidget):
 
         color_buttons_according_to_vote(submission, self.ui.upvButton, self.ui.downButton)
 
-        for comment in submission.comments:
+        comments_list = []
+        self.load_comments_thread = FillCommentsThread(submission.comments, comments_list, submission.num_comments)
+        self.load_comments_thread.start()
+        self.load_comments_thread.completeSignal.connect(lambda e: self.display_comments_from_list(comments_list))
+
+    
+    @Slot()
+    def display_comments_from_list(self, comments_list):
+        for comment in comments_list: 
             self.ui.verticalLayout.addWidget(Comment(comment))
+
 
     @Slot()
     def upvote(self):
