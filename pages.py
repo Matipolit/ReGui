@@ -11,6 +11,31 @@ import logging
 import praw
 
 
+class FillPostsThread(QtCore.QThread):
+    # Signals to relay thread progress to the main GUI thread
+    progressSignal = QtCore.Signal(int)
+    completeSignal = QtCore.Signal(str)
+
+    def __init__(self, posts_iter, listToFill: list, number: int, reddit: praw.Reddit, show_big_post_fun, parent=None):
+        super(FillPostsThread, self).__init__(parent)
+        # You can change variables defined here after initialization - but before calling start()
+        self.posts_iter = posts_iter
+        self.listToFill = listToFill
+        self.number = number
+        self.reddit = reddit
+        self.show_big_post = show_big_post_fun
+
+    def run(self):
+        # blocking code goes here
+        emitStep = self.number/100.0
+        for i in range(self.number):
+            submission = self.posts_iter.__next__()
+            post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
+            self.listToFill.append(post_widget)
+            self.progressSignal.emit(int(i/emitStep))
+        self.completeSignal.emit("complete")
+
+
 class SubHeader(QWidget):
     def __init__(self, name: str, subs: int, subscribed: bool, icon_url: str, sub_callback, parent=None):
         super(SubHeader, self).__init__(parent)
@@ -103,10 +128,15 @@ class Page(QWidget):
         self.addPosts(10)
         
     def addPosts(self, number: int):
-        for i in range(number):
-            submission = self.sub_iterator.__next__()
-            post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
-            self.ui.pageScrollVerticalLayout.addWidget(post_widget)
+        post_list = []
+        self.fillPostsThread = FillPostsThread(self.sub_iterator, post_list, number, self.reddit, lambda sub: self.show_big_post(sub))
+        self.fillPostsThread.start()
+        for post in post_list:
+            self.ui.pageScrollVerticalLayout.addWidget(post)
+        #for i in range(number):
+        #    submission = self.sub_iterator.__next__()
+        #    post_widget = SmallPost(self.reddit, submission, lambda submission: self.show_big_post(submission))
+        #    self.ui.pageScrollVerticalLayout.addWidget(post_widget)
         
         if(hasattr(self, "moreButton")):
             self.ui.pageScrollVerticalLayout.removeWidget(self.moreButton)

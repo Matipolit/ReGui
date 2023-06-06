@@ -5,7 +5,7 @@ from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtCore import Slot
 from urllib import request
-from qt_utils import get_qpixmap_from_url, color_buttons_according_to_vote
+from qt_utils import get_qpixmap_from_url, color_buttons_according_to_vote, GetPixmapThread
 from comments import Comment
 import webbrowser
 import logging

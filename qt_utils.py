@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QPushButton
 from urllib import request
 from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtCore import QThread, Signal
 
 def remove_all_children(widget: QWidget):
     for i in reversed(range(widget.count())): 
@@ -11,6 +12,25 @@ def get_qpixmap_from_url(url: str):
     image = QImage()
     image.loadFromData(img_data)
     return QPixmap(image)
+
+
+class GetPixmapThread(QThread):
+    # Signals to relay thread progress to the main GUI thread
+    progressSignal = Signal(int)
+    completeSignal = Signal(str)
+
+    def __init__(self, url:str, pixMapToFill: QPixmap, parent=None):
+        super(MyQThread, self).__init__(parent)
+        # You can change variables defined here after initialization - but before calling start()
+        self.maxRange = 100
+        self.url = url
+        self.pixmap = pixMapToFill
+
+    def run(self):
+        # blocking code goes here
+        img_data = request.urlopen(url).read()
+        self.pixmap.loadFromData(img_data)
+        self.completeSignal.emit(self.completionMessage)
 
 def color_buttons_according_to_vote(submission, upvButton: QPushButton, downButton: QPushButton):
     if(submission.likes == True):
