@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QWidget
 import praw
 import logging
 
+
 class ResultWidget(QWidget):
     def __init__(self, subreddit, clickedCallback, parent=None):
         super(ResultWidget, self).__init__(parent)
@@ -16,24 +17,34 @@ class ResultWidget(QWidget):
             self.ui.SubIconLabel.setPixmap(get_qpixmap_from_url(subreddit.icon_img))
         except:
             self.ui.SubIconLabel.setVisible(False)
-        
+
         self.clickedCallback = clickedCallback
         self.subreddit = subreddit
-        
+
     def mousePressEvent(self, _):
         logging.debug("selected sub " + self.subreddit.display_name)
         self.clickedCallback(self.subreddit)
 
 
 class SearchWindow(QWidget):
-    def __init__(self, chosenCallback, subreddits: praw.reddit.models.Subreddits, parent=None):
+    def __init__(
+        self, chosenCallback, subreddits: praw.reddit.models.Subreddits, parent=None
+    ):
         super(SearchWindow, self).__init__(parent)
         self.ui = Ui_Search()
         self.ui.setupUi(self)
-        self.ui.searchButton.clicked.connect(lambda: self.displaySearchResults(chosenCallback, subreddits))
+        self.ui.searchButton.clicked.connect(
+            lambda: self.displaySearchResults(chosenCallback, subreddits)
+        )
         self.callback = chosenCallback
 
-    def displaySearchResults(self, chosenCallback, subreddits: praw.reddit.models.Subreddits):
+    def displaySearchResults(
+        self, chosenCallback, subreddits: praw.reddit.models.Subreddits
+    ):
         remove_all_children(self.ui.searchResultsLayout)
-        for subreddit in subreddits.search(query = self.ui.subNameEdit.text(), limit=30):
-            self.ui.searchResultsLayout.addWidget(ResultWidget(subreddit, lambda selected_sub: self.callback(selected_sub)))
+        for subreddit in subreddits.search(query=self.ui.subNameEdit.text(), limit=30):
+            self.ui.searchResultsLayout.addWidget(
+                ResultWidget(
+                    subreddit, lambda selected_sub: self.callback(selected_sub)
+                )
+            )

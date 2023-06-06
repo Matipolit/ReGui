@@ -1,5 +1,5 @@
 from ui.ui_comment import Ui_Comment
-from PySide6.QtWidgets import (QWidget)
+from PySide6.QtWidgets import QWidget
 import praw
 import markdown
 from datetime import datetime
@@ -13,12 +13,16 @@ class Comment(QWidget):
         self.ui.setupUi(self)
         self.ui.commentLabel.setText(markdown.markdown(comment.body))
         self.ui.scoreLabel.setText(str(comment.score))
-        if(comment.author is not None):
+        if comment.author is not None:
             self.ui.usrNameLabel.setText(comment.author.name)
         else:
             self.ui.usrNameLabel.setText("[deleted]")
-        self.ui.timeLabel.setText(datetime.utcfromtimestamp(comment.created_utc).strftime("%Y.%m.%d %H:%M"))
-        self.ui.downButton.clicked.connect(lambda: self.downvote(comment, score)(comment, comment.score))
+        self.ui.timeLabel.setText(
+            datetime.utcfromtimestamp(comment.created_utc).strftime("%Y.%m.%d %H:%M")
+        )
+        self.ui.downButton.clicked.connect(
+            lambda: self.downvote(comment, score)(comment, comment.score)
+        )
         self.ui.upvButton.clicked.connect(lambda: self.upvote(comment, comment.score))
         color_buttons_according_to_vote(comment, self.ui.upvButton, self.ui.downButton)
 
@@ -33,4 +37,3 @@ class Comment(QWidget):
         comment.refresh()
         self.ui.scoreLabel.setText(str(comment.score))
         color_buttons_according_to_vote(comment, self.ui.upvButton, self.ui.downButton)
-

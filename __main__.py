@@ -1,30 +1,23 @@
 import praw
-import pprint
 import locale
-from urllib import request
 import argparse
 import sys
-import os
 import logging
 from ui.ui_login import Ui_LoginWidget
 from pages import Page
 from data_handling import DataHandler
 from state import AppState
 from PySide6 import QtCore
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import (QMainWindow, QPushButton, QApplication, QLabel, QVBoxLayout, QHBoxLayout, QListView, QStackedLayout,
-                               QListWidget, QListWidgetItem, QWidget, QFileDialog)
+from PySide6.QtWidgets import QApplication, QStackedLayout, QWidget
 
 
 locale.setlocale(locale.LC_ALL, "pl_PL.UTF-8")
 
-parser = argparse.ArgumentParser(
-                    prog="ReGui",
-                    description="A Reddit GUI using PySide6")
+parser = argparse.ArgumentParser(prog="ReGui", description="A Reddit GUI using PySide6")
 
 parser.add_argument("-l", "--loglevel")
 args = parser.parse_args()
-if(args.loglevel is not None):
+if args.loglevel is not None:
     loglevel = args.loglevel
 else:
     loglevel = "info"
@@ -32,7 +25,7 @@ else:
 numeric_level = getattr(logging, loglevel.upper(), None)
 print(f"log level: {numeric_level}")
 if not isinstance(numeric_level, int):
-    raise ValueError('Invalid log level: %s' % loglevel)
+    raise ValueError("Invalid log level: %s" % loglevel)
 
 mylogger = logging.getLogger()
 mylogger.setLevel(numeric_level)
@@ -58,12 +51,13 @@ else:
         user_agent="ReGui6",
     )
 
+
 class MainLayout(QWidget):
     def __init__(self, parent=None):
         super(MainLayout, self).__init__(parent)
-        self.resize(1000,600)
+        self.resize(1000, 600)
         self.state = AppState.LOGIN
-        self.layout = QStackedLayout(self) 
+        self.layout = QStackedLayout(self)
         self.login_widget = QWidget()
         self.login_widget.ui = Ui_LoginWidget()
         self.login_widget.ui.setupUi(self.login_widget)
@@ -95,14 +89,15 @@ class MainLayout(QWidget):
 
     @QtCore.Slot()
     def update_login_buttons(self):
-        if(reddit.user.me() is not None):
+        if reddit.user.me() is not None:
             self.login_widget.ui.authorizeButton.setVisible(False)
             self.login_widget.ui.loginButton.setVisible(True)
-            self.login_widget.ui.loginButton.setText(f"Log in as {reddit.user.me().name}")
+            self.login_widget.ui.loginButton.setText(
+                f"Log in as {reddit.user.me().name}"
+            )
         else:
             self.login_widget.ui.authorizeButton.setVisible(True)
             self.login_widget.ui.loginButton.setVisible(False)
-
 
     @QtCore.Slot()
     def authorize_first_time(self):
